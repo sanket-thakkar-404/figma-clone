@@ -7,9 +7,19 @@ const state = {
   elementCounter: 0 // For unique IDs
 };
 
+// font available
+const AVAILABLE_FONTS = [
+  'Arial',
+  'Inter',
+  'Poppins',
+  'Roboto',
+  'Montserrat',
+  'Courier New'
+];
+
 // Canvas dimensions (fixed for bounds checking)
 const CANVAS_WIDTH = 1210;
-const CANVAS_HEIGHT = 1020;
+const CANVAS_HEIGHT = 1010;
 
 // DOM references
 const canvas = document.getElementById('canvas');
@@ -29,6 +39,7 @@ const radiusTL = document.getElementById('radius-tl');
 const radiusTR = document.getElementById('radius-tr');
 const radiusBR = document.getElementById('radius-br');
 const radiusBL = document.getElementById('radius-bl');
+const fontFamilySelect = document.getElementById('prop-font-family');
 
 // Initialize canvas size
 canvas.style.width = `${CANVAS_WIDTH}px`;
@@ -67,6 +78,7 @@ function selectTool(toolName) {
   console.log('Selected tool:', state.currentTool);
 }
 
+// change tha update border radius
 function updateBorderRadius(corner, value) {
   const elem = state.elements.find(e => e.id === state.selectedElementId);
   if (!elem || !elem.styles.borderRadius) return;
@@ -102,6 +114,7 @@ function renderElements() {
       div.textContent = elem.styles.textContent;
       div.style.display = 'flex';
       div.style.alignItems = 'center';
+      div.style.fontFamily = elem.styles.fontFamily;
       div.style.justifyContent = elem.styles.justifyContent;
       div.style.fontSize = `${elem.styles.fontSize}px`;
       div.style.color = elem.styles.textColor;
@@ -109,6 +122,10 @@ function renderElements() {
       div.style.fontStyle = elem.styles.fontStyle;
       div.style.textDecoration = elem.styles.textDecoration;
     }
+    if (elem.type === 'circle') {
+      div.style.borderRadius = '50%';
+    }
+
     if (state.selectedElementId === elem.id) {
       div.classList.add('selected');
       // Add resize handles
@@ -183,6 +200,7 @@ function renderProperties() {
   if (elem.type === 'text') {
     textLabel.style.display = 'block';
     fontSizeInput.value = elem.styles.fontSize || 16;
+    fontFamilySelect.value = elem.styles.fontFamily || 'Arial';
     syncTextAlignUI(elem)
     syncFontStyleUI(elem);
     propText.value = elem.styles.textContent;
@@ -324,6 +342,8 @@ document.getElementById('add-rectangle').addEventListener('click', () => {
     y: 100,
     width: 100,
     height: 100,
+    maxWidth: CANVAS_WIDTH,
+    maxHeight: CANVAS_HEIGHT,
     rotation: 0,
     zIndex: state.elements.length + 1,
     styles: {
@@ -332,6 +352,33 @@ document.getElementById('add-rectangle').addEventListener('click', () => {
         tr: 0,
         br: 0,
         bl: 0
+      }
+    }
+  });
+  selectElement(id);
+  renderAll();
+});
+
+// Add circle
+document.getElementById('add-circle').addEventListener('click', () => {
+  const id = `elem${++state.elementCounter}`;
+  state.elements.push({
+    id,
+    type: 'circle',
+    x: 100,
+    y: 100,
+    width: 100,
+    height: 100,
+    maxWidth: CANVAS_WIDTH,
+    maxHeight: CANVAS_HEIGHT,
+    rotation: 0,
+    zIndex: state.elements.length + 1,
+    styles: {
+      backgroundColor: '#2c2c2c', textContent: '', borderRadius: {
+        tl: 9999,
+        tr: 9999,
+        br: 9999,
+        bl: 9999
       }
     }
   });
@@ -361,6 +408,7 @@ document.getElementById('add-text').addEventListener('click', () => {
         br: 0,
         bl: 0
       },
+      fontFamily: 'Arial',
     }
   });
   selectElement(id);
@@ -374,7 +422,6 @@ toolBtn.forEach(btn => {
   });
 });
 
-// Properties change listeners
 propWidth.addEventListener('input', () => {
   const elem = state.elements.find(e => e.id === state.selectedElementId);
   if (elem) {
@@ -415,6 +462,32 @@ textColorInput.addEventListener('input', () => {
     saveState();
   }
 });
+
+// this is will update the font family
+function updateFontFamily() {
+  const elem = state.elements.find(e => e.id === state.selectedElementId);
+  if (!elem || elem.type !== 'text') return;
+
+  elem.styles.fontFamily = fontFamilySelect.value;
+  renderElements(); // fast render
+  saveState();
+}
+
+function updateFontSize() {
+  const elem = state.elements.find(e => e.id === state.selectedElementId);
+  if (!elem || elem.type !== 'text') return;
+
+  const size = parseInt(fontSizeInput.value, 10);
+
+  if (isNaN(size) || size < 1) return;
+
+  elem.styles.fontSize = size;
+  renderElements(); // fast render
+  saveState();
+}
+
+fontSizeInput.addEventListener('input', updateFontSize);
+fontFamilySelect.addEventListener('change', updateFontFamily);
 
 // Move layer up/down
 function moveLayer(id, direction) {
@@ -467,8 +540,18 @@ document.addEventListener('mousemove', (e) => {
     elem.x = Math.max(0, Math.min(CANVAS_WIDTH - elem.width, startX + dx));
     elem.y = Math.max(0, Math.min(CANVAS_HEIGHT - elem.height, startY + dy));
   } else if (state.currentAction === 'resize') {
-    elem.width = Math.max(10, startWidth + dx);
-    elem.height = Math.max(10, startHeight + dy);
+    const maxWidth = CANVAS_WIDTH - elem.x;
+    const maxHeight = CANVAS_HEIGHT - elem.y;
+
+    elem.width = Math.min(
+      maxWidth,
+      Math.max(10, startWidth + dx)
+    );
+
+    elem.height = Math.min(
+      maxHeight,
+      Math.max(10, startHeight + dy)
+    );
   } else if (state.currentAction === 'rotate') {
     const centerX = startX + startWidth / 2;
     const centerY = startY + startHeight / 2;
@@ -484,67 +567,6 @@ document.addEventListener('mouseup', () => {
     renderAll(); // Full render to sync properties
   }
 });
-
-// font ka size increase karne ha small karna 
-fontSizeInput.addEventListener('input', () => {
-  const elem = state.elements.find(e => e.id === state.selectedElementId);
-
-  if (elem && elem.type === 'text') {
-    elem.styles.fontSize = Math.max(10, Number(fontSizeInput.value) || 10);
-    renderElements(); // fast
-    saveState();
-  }
-});
-
-// text alignment ka liya ha
-// alignBtns.forEach(btn => {
-//   btn.addEventListener('click', () => {
-//     const elem = state.elements.find(e => e.id === state.selectedElementId);
-
-//     // ❌ Agar text select nahi hai, kuch mat karo
-//     if (!elem || elem.type !== 'text') return;
-
-//     const align = btn.dataset.align;
-//     elem.styles.justifyContent = align;
-
-//     // UI active state
-//     alignBtns.forEach(b => b.classList.remove('alignActive'));
-//     btn.classList.add('alignActive');
-
-//     renderElements();
-//     saveState();
-//   });
-// });
-// // font style logic here 
-// fontStyleBtns.forEach(btn => {
-//   btn.addEventListener('click', () => {
-//     const elem = state.elements.find(e => e.id === state.selectedElementId);
-//     if (!elem || elem.type !== 'text') return;
-
-//     const style = btn.dataset.style;
-
-//     if (style === 'bold') {
-//       elem.styles.fontWeight =
-//         elem.styles.fontWeight === 'bold' ? 'normal' : 'bold';
-//     }
-
-//     if (style === 'italic') {
-//       elem.styles.fontStyle =
-//         elem.styles.fontStyle === 'italic' ? 'normal' : 'italic';
-//     }
-
-//     if (style === 'underline') {
-//       elem.styles.textDecoration =
-//         elem.styles.textDecoration === 'underline'
-//           ? 'none'
-//           : 'underline';
-//     }
-
-//     syncFontStyleUI(elem);
-//     renderElements();
-//     saveState();
-//   });
-// });
 
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
@@ -607,6 +629,28 @@ document.getElementById('export-html').addEventListener('click', () => {
   a.download = 'layout.html';
   a.click();
   URL.revokeObjectURL(url);
+});
+
+// create a new Page
+document.getElementById('create-new').addEventListener('click', () => {
+  const confirmNew = confirm(
+    'This will delete all elements and create a new page. Continue?'
+  );
+
+  if (!confirmNew) return;
+
+  // 🔴 HARD RESET
+  state.elements = [];
+  state.selectedElementId = null;
+  state.currentAction = null;
+  state.currentTool = 'select';
+  state.elementCounter = 0;
+
+  // 🔴 Clear storage
+  localStorage.removeItem('editorState');
+
+  // 🔴 Re-render everything
+  renderAll();
 });
 
 // Initialize
