@@ -1,0 +1,166 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Toolbar */
+#toolbar {
+    background-color: #fff;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+}
+
+#toolbar button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#toolbar button:hover {
+    background-color: #0056b3;
+}
+
+/* Main layout */
+#main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Panels */
+#layers-panel, #properties-panel {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#properties-panel {
+    border-right: none;
+    border-left: 1px solid #ddd;
+}
+
+#layers-panel h3, #properties-panel h3 {
+    margin-bottom: 10px;
+}
+
+/* Canvas */
+#canvas {
+    flex: 1;
+    background-color: #fff;
+    position: relative;
+    border: 1px solid #ddd;
+    overflow: hidden; /* Prevent elements from visually leaving */
+}
+
+/* Element styles */
+.element {
+    position: absolute;
+    border: 1px solid transparent;
+    cursor: move;
+    user-select: none;
+}
+
+.element.selected {
+    border: 2px solid #007bff;
+}
+
+/* Resize handles */
+.handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #007bff;
+    border: 1px solid #fff;
+    cursor: nw-resize;
+}
+
+.handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+.handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+.handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+.handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+
+/* Rotation handle */
+.rotate-handle {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background-color: #007bff;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    cursor: alias;
+}
+
+.active{
+  background-color: rgba(16, 137, 236, 0.866);
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Layers list */
+.layer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.layer-item.selected {
+    background-color: #e3f2fd;
+}
+
+.layer-item button {
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+/* Properties */
+#properties-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#properties-content label {
+    display: flex;
+    flex-direction: column;
+}
+
+#properties-content input {
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.alignActive {
+  background-color: #d1d5db; 
+  padding-left: 1.25rem;    
+  padding-right: 1.25rem;   
+}
+.styleActive {
+  background-color: #d1d5db;
+  padding-left: 1.25rem;    
+  padding-right: 1.25rem;
+}
+
+.text-align-btn{
+  cursor: pointer;
+}
+#prop-bg{
+  width: 100%;
+}

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figma Style</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <!-- Top Toolbar -->
+
+    <header
+      class="h-[56px] bg-[#2c2c2c] px-4 flex items-center justify-between text-white"
+    >
+      <!-- LEFT TOOLBAR -->
+      <div class="flex items-center gap-6">
+        <!-- Logo + menu -->
+        <h2><img src="./icons/figma.png" class="h-6" /></h2>
+
+        <div class="h-6 w-px bg-gray-600"></div>
+
+        <!-- Selection tools -->
+        <button class="tool-btn" data-tool="select" id="selected">
+          <i class="ri-cursor-line text-xl"></i>
+        </button>
+
+        <!-- Shape tools -->
+        <button class="tool-btn" data-tool="text" id="add-text">
+          <i class="ri-text text-2xl"></i>
+        </button>
+
+        <!-- Rectangle -->
+        <button class="tool-btn" data-tool="rect" id="add-rectangle">
+          <i class="ri-square-line text-2xl"></i>
+        </button>
+      </div>
+
+      <!-- CENTER -->
+      <div class="text-gray-300 text-sm">Draft 1</div>
+
+      <!-- RIGHT -->
+      <div class="flex items-center gap-3">
+        <button
+          id="export-json"
+          class="text-sm bg-gray-400 px-5 py-2 rounded-lg"
+        >
+          Export JSON
+        </button>
+        <button
+          id="export-html"
+          class="bg-blue-400 px-5 py-2 rounded-lg text-sm"
+        >
+          Export HTML
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main id="main">
+      <!-- Left Panel: Layers -->
+      <aside id="layers-panel">
+        <h3 class="text-center">Layers</h3>
+        <div id="layers-list"></div>
+      </aside>
+
+      <!-- Center: Canvas -->
+      <div id="canvas"></div>
+
+      <!-- Right Panel: Properties -->
+      <aside id="properties-panel">
+        <h3 class="font-bold text-center">Properties</h3>
+        <div id="properties-content">
+          <label
+            >Width:
+            <input
+              class="outline-none border border-2 rounded-xl"
+              type="number"
+              id="prop-width"
+              min="10"
+          /></label>
+          <label
+            >Height:
+            <input
+              type="number"
+              class="outline-none border border-2 rounded-xl"
+              id="prop-height"
+              min="10"
+          /></label>
+
+          <div class="mt-3">
+            <h1 class="mb-2">Border Radius :</h1>
+
+            <div class="grid grid-cols-2 gap-2" id="radius-controls">
+              <input
+                type="number"
+                id="radius-tl"
+                placeholder="Top Left"
+                min="0"
+              />
+              <input
+                type="number"
+                id="radius-tr"
+                placeholder="Top Right"
+                min="0"
+              />
+              <input
+                type="number"
+                id="radius-br"
+                placeholder="Bottom Right"
+                min="0"
+              />
+              <input
+                type="number"
+                id="radius-bl"
+                placeholder="Bottom Left"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <label>Background: <input type="color" id="prop-bg"  class="w-full h-15 "/></label>
+          <div id="text-label" class="">
+            <h2 class="text-xl mb-2">Text: Properties :</h2>
+               <label class="mb-2"
+              >Text:
+              <input
+                type="text"
+                id="prop-text"
+                class="outline-none border border-2 rounded-xl"
+              />
+            </label>
+            <label class="mb-3" >
+              Text-size:
+              <input
+                class="outline-none border border-2 rounded-xl "
+                type="number"
+                id="prop-font-size"
+                min="10"
+              />
+            </label>
+            <label
+              >Text-color: <input type="color" class="w-full h-15" id="prop-color"
+            /></label>
+         
+
+            <!-- alignment html -->
+            <div class="mt-3">
+              <h1 class="mb-2">Text Alignment :</h1>
+              <div
+                class="border border-1 flex gap-2 justify-around"
+                id="text-align-controls"
+              >
+                <button class="text-align-btn" data-align="flex-start">
+                  <i class="ri-align-left text-xl"></i>
+                </button>
+                <button class="text-align-btn" data-align="center">
+                  <i class="ri-align-center text-xl"></i>
+                </button>
+                <button class="text-align-btn" data-align="flex-end">
+                  <i class="ri-align-right text-xl"></i>
+                </button>
+              </div>
+            </div>
+            <!-- font styles -->
+            <div class="mt-3 cursor-pointer">
+              <h1 class="mb-2">Font Style :</h1>
+
+              <div
+                class="border border-1 flex gap-2 justify-around p-1"
+                id="font-style-controls"
+              >
+                <button class="font-style-btn" data-style="bold">
+                  <b>B</b>
+                </button>
+
+                <button class="font-style-btn" data-style="italic">
+                  <i>I</i>
+                </button>
+
+                <button class="font-style-btn" data-style="underline">
+                  <u>U</u>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
