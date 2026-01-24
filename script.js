@@ -40,6 +40,7 @@ const radiusTR = document.getElementById('radius-tr');
 const radiusBR = document.getElementById('radius-br');
 const radiusBL = document.getElementById('radius-bl');
 const fontFamilySelect = document.getElementById('prop-font-family');
+const deleteBtn = document.getElementById('delete-element');
 
 // Initialize canvas size
 canvas.style.width = `${CANVAS_WIDTH}px`;
@@ -75,7 +76,6 @@ function selectTool(toolName) {
     );
   });
 
-  console.log('Selected tool:', state.currentTool);
 }
 
 // change tha update border radius
@@ -175,7 +175,6 @@ function renderLayers() {
 // Render properties panel for selected element
 function renderProperties() {
   const elem = state.elements.find(e => e.id === state.selectedElementId);
-  console.log(elem)
   if (!elem) {
     propWidth.value = '';
     propHeight.value = '';
@@ -186,8 +185,10 @@ function renderProperties() {
     radiusTR.value = "";
     radiusBR.value = "";
     radiusBL.value = "";
+    deleteBtn.classList.add('hidden');
     return;
   }
+  deleteBtn.classList.remove('hidden'); // 🟢 show
   if (elem.styles.borderRadius) {
     radiusTL.value = elem.styles.borderRadius.tl;
     radiusTR.value = elem.styles.borderRadius.tr;
@@ -600,6 +601,22 @@ document.addEventListener('keydown', (e) => {
     elem.y = Math.max(0, Math.min(CANVAS_HEIGHT - elem.height, elem.y + dy));
     renderAll();
   }
+});
+
+// delete element button
+deleteBtn.addEventListener('click', () => {
+  if (!state.selectedElementId) return;
+
+  const confirmDelete = confirm('Delete this element?');
+  if (!confirmDelete) return;
+
+  state.elements = state.elements.filter(
+    e => e.id !== state.selectedElementId
+  );
+
+  state.selectedElementId = null;
+  renderAll();
+   console.log('btn clicked')
 });
 
 // Export JSON
